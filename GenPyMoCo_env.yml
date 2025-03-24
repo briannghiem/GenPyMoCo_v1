@@ -1,0 +1,53 @@
+name: GenPyMoCo_env
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - _openmp_mutex=5.1=1_gnu
+  - ca-certificates=2024.9.24=h06a4308_0
+  - ld_impl_linux-64=2.40=h12ee557_0
+  - libffi=3.3=he6710b0_2
+  - libgcc-ng=11.2.0=h1234567_1
+  - libgomp=11.2.0=h1234567_1
+  - libstdcxx-ng=11.2.0=h1234567_1
+  - ncurses=6.4=h6a678d5_0
+  - openssl=1.1.1w=h7f8727e_0
+  - pip=24.2=py39h06a4308_0
+  - python=3.9.7=h12debd9_1
+  - readline=8.2=h5eee18b_0
+  - setuptools=75.1.0=py39h06a4308_0
+  - sqlite=3.45.3=h5eee18b_0
+  - tk=8.6.14=h39e8969_0
+  - tzdata=2024b=h04d1e81_0
+  - wheel=0.44.0=py39h06a4308_0
+  - xz=5.4.6=h5eee18b_1
+  - zlib=1.2.13=h5eee18b_1
+  - pip:
+    - absl-py==2.1.0
+    - chex==0.1.87
+    - cycler==0.12.1
+    - etils==1.5.2
+    - fonttools==4.55.0
+    - importlib-metadata==8.5.0
+    - jax==0.4.30
+    - jaxlib==0.4.30
+    - kiwisolver==1.4.7
+    - matplotlib==3.5.1
+    - ml-dtypes==0.5.0
+    - numpy==1.26.4
+    - opt-einsum==3.4.0
+    - optax==0.2.4
+    - packaging==24.2
+    - pillow==11.0.0
+    - piq==0.8.0
+    - pyparsing==3.2.0
+    - python-dateutil==2.9.0.post0
+    - scipy==1.13.1
+    - six==1.16.0
+    - toolz==1.0.0
+    - torch==1.9.1+cu111
+    - torchaudio==0.9.1
+    - torchvision==0.10.1+cu111
+    - typing-extensions==4.12.2
+    - zipp==3.21.0
+prefix: /home/nghiemb/miniconda3/envs/GenPyMoCo_env
