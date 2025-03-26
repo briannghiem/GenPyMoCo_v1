@@ -103,7 +103,7 @@ plot_Mtraj(T_GT, R_GT, T0, R0, img_dims) #Plotting motion trajectories (groundtr
 
 
 t1 = time()
-s_corrupted = eop._E(m_GT,C,U,T_GT,R_GT,res) 
+s_corrupted = eop._E(m_GT,C,U,T_GT,R_GT,res) #if CPU: 68 seconds
 t2 = time()
 print("Elapsed time: {} sec".format(t2 - t1))
 
@@ -113,9 +113,11 @@ CG_maxiter=5 #heuristically determined...
 CG_nbatch=1 #batch for calls to E or EH
 CG_result = "final"
 CG_params = [CG_mask, CG_maxiter, CG_nbatch, CG_result]
-m_corrupted, _, _ = rec.ImageEstimation(s_corrupted,C,U,T0,R0,res,CG_params)
+m_corrupted, _, _ = rec.ImageEstimation(s_corrupted,C,U,T0,R0,res,CG_params) #if CPU: 
 t4 = time()
 print("Elapsed time: {} sec".format(t4 - t3))
+
+plot_views(m_corrupted, vmax = 1.0)
 
 # torch.save(Mtraj_GT, dpath + "/Mtraj_GT_seq_mild.pt")
 # torch.save(s_corrupted, dpath + "/s_corrupted_seq_mild.pt")
