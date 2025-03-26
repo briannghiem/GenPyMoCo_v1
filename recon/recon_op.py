@@ -8,9 +8,15 @@ import os
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 # os.environ["TF_FORCE_GPU_ALLOW_GROWTH"]="true" #turn off GPU pre-allocation for TF
+os.environ['CUDA_VISIBLE_DEVICES'] = '' #TEMPORARILY MAKE GPU INVISIBLE
 
 import numpy as np
 import torch
+if torch.cuda.is_available():#check if torch is using gpu acceleration
+    device = 'cuda'
+else:
+    device = 'cpu'
+
 import tensorflow as tf
 
 from time import time
@@ -61,9 +67,9 @@ def ImageEstimation(s_corrupted,C,U,T_CG,R_CG,res,CG_params):
     Based on scipy implementation
     """
     mask, maxiter, batch, CG_result = CG_params
-    x0 = torch.zeros(s_corrupted.shape[1:], dtype=s_corrupted.dtype).to('cuda')
+    x0 = torch.zeros(s_corrupted.shape[1:], dtype=s_corrupted.dtype).to(device)
     if mask == None:
-        mask = torch.ones(x0.shape, dtype=x0.dtype).to('cuda')
+        mask = torch.ones(x0.shape, dtype=x0.dtype).to(device)
     #
     m_store = []
     r_store = []
@@ -111,7 +117,7 @@ def ImageEstimation(s_corrupted,C,U,T_CG,R_CG,res,CG_params):
 #%%-----------------------------------------------------------------------------
 
 def _NNParam(x_init, grad = True):
-    return torch.nn.Parameter(data=x_init, requires_grad=grad).to('cuda')
+    return torch.nn.Parameter(data=x_init, requires_grad=grad).to(device)
 
 # def MotionEstimation_Adam(m,C,U,s_corrupted,T,R,res,ME_params):
 #     class MotionModel(torch.nn.Module):
@@ -256,7 +262,7 @@ def UNet_magnitude(m_est, UNet_params):
     wpath, pads = UNet_params
     m_cnn_in = tf.convert_to_tensor(m_est.detach().cpu())
     m_cnn_out_mag = cnn.main(np.abs(m_cnn_in), pads, wpath + r'/magnitude')
-    m_est = torch.from_numpy(m_cnn_out_mag).to('cuda')
+    m_est = torch.from_numpy(m_cnn_out_mag).to(device)
     T = None; R = None; loss_store = None
     return m_est, T, R, loss_store
 
@@ -270,7 +276,7 @@ def UNet_complex(m_est, UNet_params):
     m_cnn_in = tf.convert_to_tensor(m_est.detach().cpu())
     m_cnn_out_real = cnn.main(np.real(m_cnn_in), pads, wpath + r'/real')
     m_cnn_out_imag = cnn.main(np.imag(m_cnn_in), pads, wpath + r'/imag')
-    m_est = torch.from_numpy(m_cnn_out_real + 1j*m_cnn_out_imag).to('cuda')
+    m_est = torch.from_numpy(m_cnn_out_real + 1j*m_cnn_out_imag).to(device)
     T = None; R = None; loss_store = None
     return m_est, T, R, loss_store
 
@@ -354,7 +360,7 @@ def ShotRegistration(m,C,U,s_corrupted,T,R,res,ME_params):
         def _STN(self, theta, m_MOVE_store):
             #Applying motion parameters to subdivisions of m_MOVE_store
             theta_new = theta.reshape((self.N_SHOTS, 6))
-            m_out = torch.zeros(m_MOVE_store[0].shape, dtype = m_MOVE_store[0].dtype, device='cuda')
+            m_out = torch.zeros(m_MOVE_store[0].shape, dtype = m_MOVE_store[0].dtype, device=device)
             for i in range(self.N_SHOTS):
                 # print("Segment {}".format(i+1))
                 m_temp = m_MOVE_store[i]
