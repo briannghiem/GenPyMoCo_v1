@@ -2,9 +2,17 @@
 Functions for evaluating image quality metrics
 '''
 
+import os
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '' #TEMPORARILY MAKE GPU INVISIBLE
+
 import numpy as np
 import piq
 import torch
+if torch.cuda.is_available():#check if torch is using gpu acceleration
+    device = 'cuda'
+else:
+    device = 'cpu'
 
 #----------------------------------------------------------
 def evalRMSE(m, m_gt):
@@ -13,7 +21,7 @@ def evalRMSE(m, m_gt):
 
 def evalPE(m, m_gt, mask=None): #percent error
     if np.all(mask==None):
-        mask = torch.ones(m.shape, device='cuda')
+        mask = torch.ones(m.shape, device=device)
     #
     m *= mask; m_gt *= mask
     return 100*(evalRMSE(m, m_gt) / evalRMSE(m_gt, np.zeros(m_gt.shape)))
@@ -32,7 +40,7 @@ def evalPE_ROI(m, m_gt, mask): #percent error
 def evalSSIM(m, m_gt, mask=None): #percent error
     max_val = abs(m).flatten().max()
     if np.all(mask==None):
-        mask = torch.ones(m.shape, device='cuda')
+        mask = torch.ones(m.shape, device=device)
     #
     m *= mask; m_gt *= mask
     return np.mean(piq.ssim(abs(m_gt), abs(m), data_range = max_val).numpy())
@@ -41,7 +49,7 @@ def evalSSIM(m, m_gt, mask=None): #percent error
 #----------------------------------------------------------
 def entropy(m, mask=None): #Pixel entropy, defined by Atkinson et al MRM 1999
     if np.all(mask==None):
-        mask = torch.ones(m.shape, device='cuda')
+        mask = torch.ones(m.shape, device=device)
     #
     m *= mask
     eps = 1e-15
@@ -54,7 +62,7 @@ def entropy(m, mask=None): #Pixel entropy, defined by Atkinson et al MRM 1999
 
 def GradientEntropy(m, mask=None):
     if np.all(mask==None):
-        mask = torch.ones(m.shape, device='cuda')
+        mask = torch.ones(m.shape, device=device)
     #
     Dx = m[1:,:,:] - m[:-1,:,:]
     Dy = m[:,1:,:] - m[:,:-1,:]
@@ -93,5 +101,5 @@ def float2int8(img):
     vmin = img.min()
     vmax = img.max() - vmin
     img_int8 = ((img - vmin)/vmax) * (2**8 - 1)
-    return torch.tensor(img_int8, dtype=torch.uint8, device='cuda')
+    return torch.tensor(img_int8, dtype=torch.uint8, device=device)
 
