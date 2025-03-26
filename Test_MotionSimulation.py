@@ -82,7 +82,8 @@ TR_shot = 16 #number of TRs per shot
 U_array = np.transpose(msi.make_samp(np.transpose(m_GT.cpu(), (1,0,2)), \
                                      Rs, TR_shot, order=pattern), \
                                         (0,2,1,3)).astype(np.float32)
-U = torch.from_numpy(U_array).to(device U_array
+
+U = torch.from_numpy(U_array).to(device); del U_array
 
 #Generate motion parameters
 j = 1; k = 1 #legacy parameters, can have placeholder values of 1; TO DO --> REMOVE THESE PARAMS
@@ -110,7 +111,7 @@ t3 = time()
 CG_mask=None
 CG_maxiter=5 #heuristically determined...
 CG_nbatch=1 #batch for calls to E or EH
-CG_result = "optimal"
+CG_result = "final"
 CG_params = [CG_mask, CG_maxiter, CG_nbatch, CG_result]
 m_corrupted, _, _ = rec.ImageEstimation(s_corrupted,C,U,T0,R0,res,CG_params)
 t4 = time()
