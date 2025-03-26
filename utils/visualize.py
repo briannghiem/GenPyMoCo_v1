@@ -41,7 +41,7 @@ def plot_Mtraj(T_GT, R_GT, T, R, img_dims, rescale = 0):
     plt.plot(T[1].detach().cpu()*Ty_scale, 'b', label="Ty")
     plt.plot(T[2].detach().cpu()*Tz_scale, 'g', label="Tz")
     # plt.legend(loc="lower left")
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=5)
     plt.ylabel("Translations (mm)")
     plt.xlabel("Shot Index")
     plt.show()
@@ -54,7 +54,8 @@ def plot_Mtraj(T_GT, R_GT, T, R, img_dims, rescale = 0):
     plt.plot(R[1].detach().cpu()*R_scale, 'b', label="Ry")
     plt.plot(R[2].detach().cpu()*R_scale, 'g', label="Rz")
     # plt.legend(loc="upper left")
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=5)
     plt.ylabel("Rotations (deg)")
     plt.xlabel("Shot Index")
     plt.show()
+
