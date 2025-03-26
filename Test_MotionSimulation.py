@@ -36,12 +36,9 @@ from utils.visualize import plot_views, plot_Mtraj
 #%%-----------------------------------------------------------------------------
 
 #Set paths
-root = r'/home/nghiemb/GenPyMoCo/data/archived'
-paradigm = 'C' #C, D, E, F
+root = r'/home/nghiemb/GenPyMoCo/data/archived' #
 sub = 1 #1, 4, 5, 6, 7
-
 sub_path = root + r'/Sub{}'.format(sub) #path to img_CG.npy and sens.npy
-test_path = root + r'/Paradigm_1{}/Test{}'.format(paradigm, sub) #path to Mtraj, m_corrupted, and s_corrupted
 
 #Import data
 m_GT = np.load(sub_path + r'/img_CG.npy') #loaded with correct orientation (LR, AP, SI) and padding, per old simulation scripts
@@ -75,6 +72,7 @@ extreme_specs = {'Tx':[1.6,0.6],'Ty':[3.6,1.0],'Tz':[3.6,1.0],\
 motion_specs = {'mild':mild_specs,'moderate':moderate_specs,\
                 'severe':severe_specs, 'extreme':extreme_specs}
 
+#%%----------------------------------
 #Generate sequential sampling pattern
 pattern = "sequential" #interleaved or sequential
 Rs = (1,1) #SENSE acceleration factor along PE1 and PE2
@@ -85,6 +83,7 @@ U_array = np.transpose(msi.make_samp(np.transpose(m_GT.cpu(), (1,0,2)), \
 
 U = torch.from_numpy(U_array).to(device); del U_array
 
+#%%----------------------------------
 #Generate motion parameters
 j = 1; k = 1 #legacy parameters, can have placeholder values of 1; TO DO --> REMOVE THESE PARAMS
 rand_keys = msi._gen_key(sub, j, k)
@@ -101,23 +100,27 @@ R0 = [Mtraj_GT[:,3]*0, Mtraj_GT[:,4]*0, Mtraj_GT[:,5]*0]
 
 plot_Mtraj(T_GT, R_GT, T0, R0, img_dims) #Plotting motion trajectories (groundtruth vs initial)
 
-
+#%%----------------------------------
+#Apply motion simulation
 t1 = time()
 s_corrupted = eop._E(m_GT,C,U,T_GT,R_GT,res) #if CPU: 68 seconds
 t2 = time()
 print("Elapsed time: {} sec".format(t2 - t1))
 
+#%%----------------------------------
+#Run image reconstruction (5 iterations of SENSE)
 t3 = time()
 CG_mask=None
 CG_maxiter=5 #heuristically determined...
 CG_nbatch=1 #batch for calls to E or EH
 CG_result = "final"
 CG_params = [CG_mask, CG_maxiter, CG_nbatch, CG_result]
-m_corrupted, _, _ = rec.ImageEstimation(s_corrupted,C,U,T0,R0,res,CG_params) #if CPU: 
+m_corrupted, _, _ = rec.ImageEstimation(s_corrupted,C,U,T0,R0,res,CG_params) #if CPU: 775 seconds 
 t4 = time()
 print("Elapsed time: {} sec".format(t4 - t3))
 
-plot_views(m_corrupted, vmax = 1.0)
+plot_views(abs(m_GT), vmax = 1.0) #Plot the groundtruth image
+plot_views(abs(m_corrupted), vmax = 1.0) #Plot the motion-corrupted image
 
 # torch.save(Mtraj_GT, dpath + "/Mtraj_GT_seq_mild.pt")
 # torch.save(s_corrupted, dpath + "/s_corrupted_seq_mild.pt")
