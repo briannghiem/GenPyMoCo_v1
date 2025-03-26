@@ -83,4 +83,28 @@ pip install protobuf==3.20.*
 pip uninstall scipy
 pip install scipy==1.10.* #downgrade scipy from v 1.13.1 to be compatible with numpy 1.19.5 (which was required to be compat with tensorflow-gpu 2.6.2.which as required for SAP UNET)
 
+#---------------------------------------------------------------------------
+#UPDATE: Jan 14, 2025 --> trying to integrate torchmin
+conda create -n GenPyMoCo_PTTF_BFGS_env python==3.9.7
+conda activate GenPyMoCo_PTTF_BFGS_env
+pip install optax
+
+pip install torch==1.9.1+cu111 torchvision==0.10.1+cu111 torchaudio==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
+
+pip uninstall numpy       # uninstall existing numpy
+pip install "numpy<2.0"   # install the latest numpy 1.x version
+			
+pip install piq
+pip install matplotlib==3.5.1
+
+pip install tensorflow-gpu==2.6.2 keras==2.6.0
+
+pip uninstall protobuf #was v5.29.3, which was incompatible with tensorflow
+pip install protobuf==3.20.*
+
+pip uninstall scipy
+pip install scipy==1.10.* #downgrade scipy from v 1.13.1 to be compatible with numpy 1.19.5 (which was required to be compat with tensorflow-gpu 2.6.2.which as required for SAP UNET)
+
+pip install pytorch-minimize
+
 
