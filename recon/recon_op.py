@@ -4,10 +4,10 @@ For UNet-Assisted Joint Motion and Image Estimation
 """
 
 import os
-os.environ['LD_LIBRARY_PATH'] ="/home/nghiemb/miniconda3/envs/GenPyMoCo_PTTF_env/lib"
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-os.environ["TF_FORCE_GPU_ALLOW_GROWTH"]="true" #turn off GPU pre-allocation for TF
+# os.environ['LD_LIBRARY_PATH'] ="/home/nghiemb/miniconda3/envs/GenPyMoCo_PTTF_BFGS_env/lib"
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+# os.environ["TF_FORCE_GPU_ALLOW_GROWTH"]="true" #turn off GPU pre-allocation for TF
 
 import numpy as np
 import torch
