@@ -44,6 +44,7 @@ def plot_Mtraj(T_GT, R_GT, T, R, img_dims, rescale = 0):
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=5)
     plt.ylabel("Translations (mm)")
     plt.xlabel("Shot Index")
+    plt.title("Estimated Motion Trajectories: Translations")
     plt.show()
     #
     plt.figure()
@@ -57,5 +58,6 @@ def plot_Mtraj(T_GT, R_GT, T, R, img_dims, rescale = 0):
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=5)
     plt.ylabel("Rotations (deg)")
     plt.xlabel("Shot Index")
+    plt.title("Estimated Motion Trajectories: Rotations")
     plt.show()
 
