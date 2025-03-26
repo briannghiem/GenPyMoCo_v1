@@ -3,11 +3,17 @@ Defining encoding operators
 For UNet-Assisted Joint Motion and Image Estimation
 """
 
-# import jax.numpy as xp
+import os
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '' #TEMPORARILY MAKE GPU INVISIBLE
+
 import numpy as np
 import torch
-
-torch.pi = torch.tensor(np.pi).to('cuda') #for convenience
+if torch.cuda.is_available():#check if torch is using gpu acceleration
+    device = 'cuda'
+else:
+    device = 'cpu'
+torch.pi = torch.tensor(np.pi).to(device) #for convenience
 
 #%%-----------------------------------------------------------------------------
 #--------------------------------HELPER FUNCTIONS-------------------------------
@@ -17,12 +23,12 @@ torch.pi = torch.tensor(np.pi).to('cuda') #for convenience
 def _fft(input, axes):
     in_shift = torch.fft.ifftshift(input, dim = axes)
     in_fft = torch.fft.fftn(in_shift, dim = axes, norm = "ortho")
-    return torch.fft.fftshift(in_fft, dim = axes).to('cuda')
+    return torch.fft.fftshift(in_fft, dim = axes).to(device)
 
 def _ifft(input, axes):
     in_shift = torch.fft.ifftshift(input, dim = axes)
     in_ifft = torch.fft.ifftn(in_shift, dim = axes, norm = "ortho")
-    return torch.fft.fftshift(in_ifft, dim = axes).to('cuda')
+    return torch.fft.fftshift(in_ifft, dim = axes).to(device)
 
 def _farray(ishape, res, axis):
     '''Compute kspace coordinates along axis'''
@@ -36,7 +42,7 @@ def _fgrid(ishape, res):
     #NB. Current torch version doesn't have indexing
     #However, default index is 'ij', so no need to swap axes
     fx_grid, fy_grid, fz_grid = torch.meshgrid(fx_array, fy_array, fz_array)
-    return fx_grid.to('cuda'), fy_grid.to('cuda'), fz_grid.to('cuda')
+    return fx_grid.to(device), fy_grid.to(device), fz_grid.to(device)
 
 def _iarray(ishape, res, axis):
     '''Compute image-space coordinates along axis'''
@@ -50,7 +56,7 @@ def _igrid(ishape, res):
     #NB. Current torch version doesn't have indexing
     #However, default index is 'ij', so no need to swap axes
     x_grid, y_grid, z_grid = torch.meshgrid(x_array, y_array, z_array)
-    return x_grid.to('cuda'), y_grid.to('cuda'), z_grid.to('cuda')
+    return x_grid.to(device), y_grid.to(device), z_grid.to(device)
 
 
 #%%-----------------------------------------------------------------------------
@@ -63,7 +69,7 @@ def _phaseRamp(D, fgrid, axis):
     '''Compute phase ramp for given axis'''
     phase = fgrid[axis] * D[axis]
     pi = torch.tensor(torch.pi)
-    return torch.exp(-2j*pi*phase).to('cuda')
+    return torch.exp(-2j*pi*phase).to(device)
 
 def _trans1D(D, fgrid, axis, input):
     '''Apply translation (phase ramp) for given axis'''
@@ -117,12 +123,12 @@ def _deg2rad(val): #convert to rad
 def _phase_tan(R_i, fgrid_i, igrid_i):
     phase = -torch.tan(_deg2rad(R_i/2)) * torch.multiply(fgrid_i, igrid_i)
     pi = torch.tensor(torch.pi)
-    return torch.exp(-2j*pi*phase).to('cuda')
+    return torch.exp(-2j*pi*phase).to(device)
 
 def _phase_sin(R_i, fgrid_i, igrid_i):
     phase = torch.sin(_deg2rad(R_i)) * torch.multiply(fgrid_i, igrid_i)
     pi = torch.tensor(torch.pi)
-    return torch.exp(-2j*pi*phase).to('cuda')
+    return torch.exp(-2j*pi*phase).to(device)
 
 def _shear_tan(R_i, fgrid_i, igrid_i, tan_axis, input):
     #Compute nonlinear phase ramp for shearing along given axis
@@ -199,7 +205,7 @@ def _EH_n(s_in,C,U_n,T_n,R_n,res,method='FFT'): #Apply inverse encoding operator
 
 def _E(m_in,C,U,T,R,res,method='FFT'):
     #Create stacked affine transforms
-    s_out = torch.zeros(C.shape, dtype = C.dtype).to('cuda')
+    s_out = torch.zeros(C.shape, dtype = C.dtype).to(device)
     Tx,Ty,Tz = T; Rx,Ry,Rz = R
     #Create chunks based on batch size
     batch = 1 #force sequential evaluation
@@ -219,7 +225,7 @@ def _E(m_in,C,U,T,R,res,method='FFT'):
     return s_out
 
 def _EH(s_in,C,U,T,R,res,method='FFT'):
-    m_out = torch.zeros(s_in.shape[1:], dtype=C.dtype).to('cuda')
+    m_out = torch.zeros(s_in.shape[1:], dtype=C.dtype).to(device)
     #Create stacked affine transforms
     Tx,Ty,Tz = T; Rx,Ry,Rz = R
     #Create chunks based on batch size
@@ -284,7 +290,7 @@ def Translate_Regrid(input, D, res, mode='fwd'):
     TyTx = Ty_Regrid(Tx, D)
     TzTyTx = Tz_Regrid(TyTx, D)
     #
-    return TzTyTx.to('cuda')
+    return TzTyTx.to(device)
 
 
 #Rotations
@@ -323,4 +329,4 @@ def Rotate_Regrid(input, R, res, pad=(0,0,0), mode='fwd'):
         RxRyRz = Rx_Regrid(RyRz, R)
         out = _unpad(RxRyRz, pad)
     #
-    return out.to('cuda')
+    return out.to(device)
