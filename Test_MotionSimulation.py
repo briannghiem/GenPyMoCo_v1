@@ -74,7 +74,7 @@ motion_specs = {'mild':mild_specs,'moderate':moderate_specs,\
 
 #%%----------------------------------
 #Generate sequential sampling pattern
-pattern = "sequential" #interleaved or sequential
+pattern = "interleaved" #interleaved or sequential
 Rs = (1,1) #SENSE acceleration factor along PE1 and PE2
 TR_shot = 16 #number of TRs per shot
 U_array = np.transpose(msi.make_samp(np.transpose(m_GT.cpu(), (1,0,2)), \
@@ -106,6 +106,13 @@ t1 = time()
 s_corrupted = eop._E(m_GT,C,U,T_GT,R_GT,res) #if CPU: 68 seconds
 t2 = time()
 print("Elapsed time: {} sec".format(t2 - t1))
+
+#%%----------------------------------
+#Run IFFT and root-sum-of-squares on s_corrupted, for fast prototyping
+m_estimate = eop._ifft(s_corrupted, axes = (1,2,3)).numpy()
+m_rrs = np.sqrt(np.sum(abs(m_estimate)**2, axis = 0))
+
+plot_views(m_rrs)
 
 #%%----------------------------------
 #Run image reconstruction (5 iterations of SENSE)
