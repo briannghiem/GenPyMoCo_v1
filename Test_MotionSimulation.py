@@ -110,9 +110,9 @@ print("Elapsed time: {} sec".format(t2 - t1))
 #%%----------------------------------
 #Run IFFT and root-sum-of-squares on s_corrupted, for fast prototyping
 m_estimate = eop._ifft(s_corrupted, axes = (1,2,3)).numpy()
-m_rrs = np.sqrt(np.sum(abs(m_estimate)**2, axis = 0))
+m_rss = np.sqrt(np.sum(abs(m_estimate)**2, axis = 0))
 
-plot_views(m_rrs)
+plot_views(m_rss)
 
 #%%----------------------------------
 #Run image reconstruction (5 iterations of SENSE)
