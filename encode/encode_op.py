@@ -314,7 +314,6 @@ def Rz_Regrid(m, R):
     return Rz
 
 def Rotate_Regrid(input, R, res, pad=(0,0,0), mode='fwd'):
-    '''Implementing 9-Pass Shear Decomposition of 3D Rotation (Unser et al, 1995)'''
     R = [-r for r in R] #need to reverse orientation to match to FFT implementation
     m_pad = _pad(input, pad)
     if mode=='fwd':
